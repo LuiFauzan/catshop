@@ -43,6 +43,7 @@ class CatsModel extends CI_Model {
 		$this->db->where('id_082',$id);
 		$this->db->delete('cats');
 	}
+	
 	public function sale($id){
 		$data = array
 		(
@@ -63,5 +64,20 @@ class CatsModel extends CI_Model {
 		$this->db->join('cats','cats.id_082=catsale.cat_id_082');
 		$query = $this->db->get('catsale');
 		return $query->result();
+	}
+	public function changephoto($file,$id){
+        $this->db->select('catphoto_082');
+        $this->db->from('cats');
+        $this->db->where('id_082', $id);
+        $query = $this->db->get();
+        $photo = $query->row()->catphoto_082;
+
+        if($photo != 'default.png')
+        unlink('./uploads/cats/'.$photo);
+
+        $this->db->set('catphoto_082', $file);
+        $this->db->where('id_082',$id);
+        return $this->db->update('cats');
+
 	}
 }

@@ -9,12 +9,24 @@ class Categories extends CI_Controller {
 		if(! $this->session->userdata('username')) redirect('auth082/login');
 
 		$this->load->model('CategoriesModel');
+		$this->initUserSession();
+
 	}
+	protected function initUserSession()
+    {
+        // Check if user is logged in
+        if ($this->session->userdata('username')) {
+            // Get user session information
+            $this->userdata['fullname'] = $this->session->userdata('fullname');
+            $this->userdata['usertype'] = $this->session->userdata('usertype');
+            $this->userdata['photo'] = $this->session->userdata('photo');
+        }
+    }
 	public function index()
 	{
 		$data['categories'] = $this->CategoriesModel->read();
-		$this->load->view('categories/category_list',$data);
-		
+		$data += $this->userdata;
+		return view('categories/category_list',$data);
 	}
 	public function add()
 	{
@@ -22,7 +34,9 @@ class Categories extends CI_Controller {
 			$this->CategoriesModel->create();
 			redirect('categories');
 		}
-		$this->load->view('categories/category_form');
+		$data['categories'] = $this->CategoriesModel->read();
+		$data += $this->userdata;
+		return view('categories/category_form',$data);
 	}
 	public function edit($id)
 	{
